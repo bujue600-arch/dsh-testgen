@@ -2,7 +2,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { languageOf, hasGlobMagic, resolveTargets, walkFiles } from '../src/engine/resolve.ts'
+import { languageOf, hasGlobMagic, resolveTargets, walkFiles, globRoot } from '../src/engine/resolve.ts'
 import { ERROR_CODES, TestgenError } from '../src/errors.ts'
 import { resolveConfig } from '../src/schema.ts'
 
@@ -49,6 +49,14 @@ describe('walkFiles', () => {
     expect(result.files).toContain('src/nested/util.ts')
     expect(result.files.some((file) => file.startsWith('node_modules'))).toBe(false)
     expect(result.truncated).toBe(false)
+  })
+})
+
+describe('globRoot', () => {
+  it('preserves POSIX leading separators and Windows drive letters', () => {
+    expect(globRoot('/tmp/project/src/**/*.ts')).toBe('/tmp/project/src')
+    expect(globRoot('C:/work/project/src/**/*.ts')).toBe('C:/work/project/src')
+    expect(globRoot('C:\\work\\project\\**\\*.ts')).toBe('C:/work/project')
   })
 })
 

@@ -168,16 +168,23 @@ function safeSize(path: string): number {
   }
 }
 
-/** Root directory for a glob: the prefix before the first magic segment. */
-function globRoot(absoluteGlob: string): string {
-  const segments = absoluteGlob.split(/[\\/]/u)
+/**
+ * Root directory for a glob: the prefix before the first magic segment.
+ * Preserves POSIX leading separators and Windows drive letters — `path.join`
+ * silently drops both.
+ */
+export function globRoot(absoluteGlob: string): string {
+  const segments = absoluteGlob.split(/[\\/]+/u).filter((segment) => segment.length > 0)
   const root: string[] = []
   for (const segment of segments) {
     if (hasGlobMagic(segment)) break
     root.push(segment)
   }
-  const joined = join(...root)
-  return joined.length === 0 ? resolve('.') : (absoluteGlob.startsWith('/') || /^[A-Za-z]:/u.test(absoluteGlob) ? joined : resolve(joined))
+  if (root.length === 0) return resolve('.')
+  const joined = root.join('/')
+  if (absoluteGlob.startsWith('/')) return `/${joined}`
+  if (/^[A-Za-z]:/u.test(absoluteGlob)) return joined
+  return resolve(joined)
 }
 
 function normalize(path: string): string {
