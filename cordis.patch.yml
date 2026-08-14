@@ -1,0 +1,27 @@
+# dsh-testgen bundle patch — one insert over the profile root.
+# `dsh plugin add dsh-testgen` reconciles this package into the profile's
+# `dsh.profile.bundles` layer list because package.json declares
+# `dsh.bundle.patch`; the composer then applies these rows. Users may
+# override any field in their profile `cordis.patch.yml` by row id
+# (`testgen`); last write wins, and a patch replaces the whole config.
+- insert:
+    - id: testgen
+      name: dsh-testgen
+      config:
+        runner: auto          # auto | vitest | jest | node-test | mocha
+        generator: auto       # auto | llm | template
+        maxIterations: 3      # generate → run → fix loop bound
+        timeoutSec: 120       # per-run wall-clock timeout
+        autoRun: true         # run the suite after generation
+        includeGlobs:
+          - '**/*.{ts,tsx,js,jsx}'
+        excludeGlobs:
+          - '**/node_modules/**'
+          - '**/dist/**'
+          - '**/build/**'
+          - '**/.git/**'
+          - '**/*.test.*'
+          - '**/*.spec.*'
+          - '**/__tests__/**'
+        testDir: __tests__    # generated test files land here, next to the target
+        maxSourceChars: 60000 # source characters fed to the LLM per target

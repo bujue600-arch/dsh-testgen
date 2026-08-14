@@ -1,0 +1,11 @@
+node_modules/
+lib/
+coverage/
+*.log
+.DS_Store
+.idea/
+.vscode/
+*.tsbuildinfo
+examples/fixture/node_modules/
+examples/fixture/src/__tests__/
+assets/*.tmp

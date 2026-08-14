@@ -1,0 +1,107 @@
+{
+  "name": "dsh-testgen",
+  "version": "1.0.0",
+  "description": "Automated unit-test generation for DeepSeek Harness: a /testgen command and generate_tests tool that scaffold, run, and fix tests until they pass.",
+  "type": "module",
+  "main": "lib/index.mjs",
+  "types": "lib/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.mts",
+      "default": "./lib/index.mjs"
+    },
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "verify:manifest": "node scripts/verify-manifest.mjs",
+    "demo": "node scripts/demo.mjs",
+    "prepare": "node scripts/verify-manifest.mjs && tsdown"
+  },
+  "keywords": [
+    "deepseek",
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "testing",
+    "unit-test",
+    "test-generation",
+    "vitest",
+    "jest",
+    "node-test",
+    "coding-agent",
+    "ai"
+  ],
+  "license": "MIT",
+  "author": "bujue600-arch <bujue600@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bujue600-arch/dsh-testgen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bujue600-arch/dsh-testgen/issues"
+  },
+  "homepage": "https://github.com/bujue600-arch/dsh-testgen#readme",
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "@deepseek-ai/cordis": {
+    "services": {
+      "required": [
+        "commands",
+        "tools"
+      ]
+    },
+    "description": {
+      "en": "Automated unit-test generation",
+      "zh": "自动化单元测试生成"
+    }
+  },
+  "dependencies": {
+    "@deepseek-ai/schemastery": "^3.18.1",
+    "picomatch": "^4.0.3"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1",
+    "@deepseek-ai/dsh-commands": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-llm": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-settings": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-tools": "^0.1.0-rc.6"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "4.0.1",
+    "@deepseek-ai/dsh-agent": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-commands": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-llm": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-session": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-settings": "0.1.0-rc.6",
+    "@deepseek-ai/dsh-tools": "0.1.0-rc.6",
+    "@types/node": "^26.2.0",
+    "@types/picomatch": "^4.0.3",
+    "eslint": "^10.8.1",
+    "puppeteer-core": "^25.7.0",
+    "tsdown": "^0.22.14",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.67.0",
+    "vitest": "^4.1.10"
+  }
+}

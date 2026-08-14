@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="156" viewBox="0 0 880 156" role="img" aria-label="dsh-testgen terminal demo">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#161b22"/>
+      <stop offset="1" stop-color="#0d1117"/>
+    </linearGradient>
+  </defs>
+  <rect width="880" height="156" rx="12" fill="url(#bg)"/>
+  <rect width="880" height="34" rx="12" fill="#21262d"/>
+  <rect y="22" width="880" height="12" fill="#21262d"/>
+  <circle cx="30" cy="17" r="6" fill="#f85149"/>
+  <circle cx="52" cy="17" r="6" fill="#d29922"/>
+  <circle cx="74" cy="17" r="6" fill="#3fb950"/>
+  <text x="440" y="22" text-anchor="middle" font-family="Consolas, 'Cascadia Mono', Menlo, monospace" font-size="12" fill="#8b949e">dsh-testgen — /testgen src/string-utils.ts</text>
+  <text x="20" y="67.75" font-family="Consolas, 'Cascadia Mono', Menlo, monospace" font-size="14" fill="#c9d1d9">﻿Testgen PASSED in 0.2s</text>
+<text x="20" y="88.75" font-family="Consolas, 'Cascadia Mono', Menlo, monospace" font-size="14" fill="#d2a8ff">Targets (1): src/string-utils.ts</text>
+<text x="20" y="109.75" font-family="Consolas, 'Cascadia Mono', Menlo, monospace" font-size="14" fill="#58a6ff">  wrote src/__tests__/string-utils.test.mts (template, 4 tests, node-test)</text>
+<text x="20" y="130.75" font-family="Consolas, 'Cascadia Mono', Menlo, monospace" font-size="14" fill="#3fb950">Run #0 node-test: PASS in 0.2s — 4 passed, 0 failed</text>
+  <text x="860" y="148" text-anchor="end" font-family="Consolas, 'Cascadia Mono', Menlo, monospace" font-size="11" fill="#484f58">dsh-testgen v1.0.0 · real node --test run, no mocks</text>
+</svg>

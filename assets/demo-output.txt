@@ -1,0 +1,4 @@
+﻿Testgen PASSED in 0.2s
+Targets (1): src/string-utils.ts
+  wrote src/__tests__/string-utils.test.mts (template, 4 tests, node-test)
+Run #0 node-test: PASS in 0.2s — 4 passed, 0 failed

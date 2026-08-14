@@ -1,0 +1,33 @@
+name: Feature request
+description: Propose an enhancement for dsh-testgen
+title: 'feat: '
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ideas are welcome! Describe the problem and the shape of the solution.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What pain point does this solve? What do you do today instead?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: What should the plugin do? Include example invocations (/testgen … or generate_tests({…})) and expected output.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches you thought about and why they don't fit.
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Links, related issues, ecosystem plugins that overlap.

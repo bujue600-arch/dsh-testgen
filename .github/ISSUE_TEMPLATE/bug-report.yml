@@ -1,0 +1,63 @@
+name: Bug report
+description: Report a defect in dsh-testgen
+title: 'bug: '
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill in as much detail as possible — every field helps.
+  - type: input
+    id: version
+    attributes:
+      label: Plugin version
+      description: Output of `dsh plugin --profile web list dsh-testgen`, or the package version.
+      placeholder: 1.0.0
+    validations:
+      required: true
+  - type: input
+    id: harness
+    attributes:
+      label: DeepSeek Harness version
+      description: `dsh --version` or the @deepseek-ai/dsh version.
+      placeholder: 0.1.0-rc.6
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Node version (`node --version`), runner and its version.
+      placeholder: Windows 11, Node v22.22.3, vitest 3
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Exact commands (e.g. the /testgen invocation) and the smallest project layout that reproduces it.
+      placeholder: |
+        1. /testgen src/utils/foo.ts
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: The report text / error you got, including warnings and failure details.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Run with `--json` and paste the report, or any logger output from the dsh console.
+      render: json

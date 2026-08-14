@@ -1,0 +1,6 @@
+{
+  "name": "testgen-demo-fixture",
+  "private": true,
+  "type": "module",
+  "description": "Demo project used by dsh-testgen's pnpm run demo"
+}

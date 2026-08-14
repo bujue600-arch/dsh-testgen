@@ -1,0 +1,189 @@
+/**
+ * Deterministic template generator: structural smoke tests scaffolded from
+ * a file's exported symbols, with zero LLM involvement.
+ *
+ * The scanner is deliberately a heuristic (comment/string stripping plus
+ * regexes over the residue) — it must never throw on arbitrary source, only
+ * degrade to fewer (or zero) discovered symbols. Emitted tests are smoke
+ * tests: they prove the module imports and its exports still exist, which
+ * is exactly what a first scaffold should guarantee. The LLM generator
+ * replaces them with behavioral tests when composed.
+ * @module dsh-testgen/engine/template
+ */
+
+import { readFileSync } from 'node:fs'
+import { dirname, join, relative } from 'node:path'
+import type { SourceTarget, TargetLanguage } from '../types.ts'
+
+/** One symbol discovered in a source file. */
+export interface ParsedSymbol {
+  kind: 'function' | 'class'
+  name: string
+}
+
+const IDENT = String.raw`[A-Za-z_$][\w$]*`
+
+/** Replace comments and string/template literals with spaces, keeping newlines. */
+export function stripNoise(source: string): string {
+  const out = source.split('')
+  let i = 0
+  while (i < source.length) {
+    const char = source[i]!
+    if (char === '/' && source[i + 1] === '/') {
+      while (i < source.length && source[i] !== '\n') out[i++] = ' '
+      continue
+    }
+    if (char === '/' && source[i + 1] === '*') {
+      out[i] = ' '
+      out[i + 1] = ' '
+      i += 2
+      while (i < source.length && !(source[i] === '*' && source[i + 1] === '/')) {
+        if (source[i] !== '\n') out[i] = ' '
+        i++
+      }
+      if (i < source.length) {
+        out[i] = ' '
+        out[i + 1] = ' '
+        i += 2
+      }
+      continue
+    }
+    if (char === '"' || char === "'" || char === '`') {
+      const quote = char
+      out[i++] = ' '
+      while (i < source.length) {
+        const current = source[i]!
+        if (current === '\\') {
+          out[i] = ' '
+          out[i + 1] = ' '
+          i += 2
+          continue
+        }
+        if (current === quote) {
+          out[i++] = ' '
+          break
+        }
+        if (current !== '\n') out[i] = ' '
+        i++
+      }
+      continue
+    }
+    i++
+  }
+  return out.join('')
+}
+
+const PATTERNS: { kind: ParsedSymbol['kind']; regex: RegExp }[] = [
+  { kind: 'function', regex: new RegExp(String.raw`export\s+(?:default\s+)?(?:async\s+)?function\s+(${IDENT})`, 'gu') },
+  { kind: 'function', regex: new RegExp(String.raw`export\s+const\s+(${IDENT})\s*=\s*(?:async\s*)?(?:\([^)]*\)\s*=>|function(?:\s+${IDENT})?\s*\()`, 'gu') },
+  { kind: 'class', regex: new RegExp(String.raw`export\s+(?:default\s+)?class\s+(${IDENT})`, 'gu') },
+]
+
+/**
+ * Discover exported symbols in source order. Deduplicates by name (first
+ * occurrence wins); never throws — malformed input simply yields fewer
+ * symbols.
+ */
+export function parseExports(source: string): ParsedSymbol[] {
+  const stripped = stripNoise(source)
+  const seen = new Set<string>()
+  const found: { index: number; symbol: ParsedSymbol }[] = []
+  for (const { kind, regex } of PATTERNS) {
+    for (const match of stripped.matchAll(regex)) {
+      const name = match[1]!
+      if (seen.has(name)) continue
+      seen.add(name)
+      found.push({ index: match.index, symbol: { kind, name } })
+    }
+  }
+  return found.sort((a, b) => a.index - b.index).map((entry) => entry.symbol)
+}
+
+/** File extension for a generated test file, per framework and language. */
+export function testFileExtensionFor(framework: 'vitest' | 'jest' | 'node-test' | 'mocha', language: TargetLanguage): string {
+  if (framework === 'node-test') {
+    // `.mts`/`.mjs` are unconditionally ESM, which Node's type stripping
+    // requires — a bare `.ts` without a `type: module` package parses as CJS.
+    return language === 'typescript' || language === 'typescript-jsx' ? '.test.mts' : '.test.mjs'
+  }
+  switch (language) {
+    case 'typescript': return '.test.ts'
+    case 'typescript-jsx': return '.test.tsx'
+    case 'javascript': return '.test.js'
+    case 'javascript-jsx': return '.test.jsx'
+    case 'unknown': return '.test.js'
+  }
+}
+
+/** Final path component (basename) of a path, `/`- or `\`-separated. */
+export function basename(path: string): string {
+  const idx = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'))
+  return idx === -1 ? path : path.slice(idx + 1)
+}
+
+/** Import specifier from a generated test file back to its target module. */
+export function importSpecifierFor(target: SourceTarget, testFileAbsolute: string): string {
+  const spec = relative(dirname(testFileAbsolute), target.absolute).replaceAll('\\', '/')
+  return spec.startsWith('.') ? spec : `./${spec}`
+}
+
+/** Render one generated test file's source. */
+export function renderTestFile(target: SourceTarget, symbols: ParsedSymbol[], framework: 'vitest' | 'jest' | 'node-test' | 'mocha', importSpecifier: string): string {
+  const expectApi = framework === 'vitest' || framework === 'jest'
+  const lines: string[] = [
+    '// Generated by dsh-testgen (template generator). Structural smoke tests:',
+    '// they prove the module imports and its exports still exist.',
+    '// Run /testgen with an LLM composed for behavioral tests.',
+  ]
+  if (framework === 'vitest') lines.push(`import { it, expect } from 'vitest'`)
+  else if (framework === 'jest') lines.push(`import { it, expect } from '@jest/globals'`)
+  else lines.push(`import { it } from 'node:test'`)
+  if (!expectApi) lines.push(`import assert from 'node:assert/strict'`)
+  lines.push(`import * as mod from ${JSON.stringify(importSpecifier)}`, '')
+
+  if (symbols.length === 0) {
+    lines.push(`it('module loads', () => {`)
+    lines.push(`  ${expectApi ? 'expect(mod).toBeDefined()' : 'assert.ok(mod !== undefined)'}`)
+    lines.push(`})`)
+    return `${lines.join('\n')}\n`
+  }
+
+  symbols.forEach((symbol, index) => {
+    if (index > 0) lines.push('')
+    lines.push(`it('exports ${symbol.name}', () => {`)
+    lines.push(`  ${expectApi ? `expect(typeof mod.${symbol.name}).toBe('function')` : `assert.equal(typeof mod.${symbol.name}, 'function')`}`)
+    lines.push(`})`)
+  })
+  return `${lines.join('\n')}\n`
+}
+
+/** Absolute path of the test file for a target under a given `testDir`. */
+export function testFilePathFor(target: SourceTarget, testDir: string, framework: 'vitest' | 'jest' | 'node-test' | 'mocha'): string {
+  const dot = target.absolute.lastIndexOf('.')
+  const stem = dot === -1 ? target.absolute : target.absolute.slice(0, dot)
+  return join(dirname(target.absolute), testDir, `${basename(stem)}${testFileExtensionFor(framework, target.language)}`)
+}
+
+/**
+ * Generate one template test file for a target.
+ * @returns absolute test path, rendered source, and emitted test count.
+ */
+export function generateTemplateTest(
+  target: SourceTarget,
+  testDir: string,
+  framework: 'vitest' | 'jest' | 'node-test' | 'mocha',
+): { path: string; source: string; testCount: number } {
+  const filePath = testFilePathFor(target, testDir, framework)
+  let source = ''
+  try {
+    source = readFileSync(target.absolute, 'utf8')
+  } catch {
+    source = ''
+  }
+  const symbols = parseExports(source)
+  return {
+    path: filePath,
+    source: renderTestFile(target, symbols, framework, importSpecifierFor(target, filePath)),
+    testCount: Math.max(symbols.length, 1),
+  }
+}
