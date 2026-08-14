@@ -2,7 +2,7 @@
 
 > Automated unit-test generation for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness): a `/testgen` command and a `generate_tests` tool that scaffold tests, run your project's test runner, and **fix failures until they pass** — bounded, observable, and honest about what it changed.
 
-[![npm](https://img.shields.io/npm/v/dsh-testgen?color=4D6BFE)](https://www.npmjs.com/package/dsh-testgen)
+[![release](https://img.shields.io/github/v/release/bujue600-arch/dsh-testgen?color=4D6BFE)](https://github.com/bujue600-arch/dsh-testgen/releases)
 [![license](https://img.shields.io/github/license/bujue600-arch/dsh-testgen)](./LICENSE)
 [![CI](https://github.com/bujue600-arch/dsh-testgen/actions/workflows/ci.yml/badge.svg)](https://github.com/bujue600-arch/dsh-testgen/actions/workflows/ci.yml)
 [![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
@@ -52,14 +52,11 @@ In the Web UI, the plugin shows up in **Settings → Plugins → Plugin list** w
 Requires Node ≥ 22 and `dsh` (DeepSeek Harness CLI).
 
 ```sh
-# From npm (recommended)
-dsh plugin --profile web add dsh-testgen
-
-# Or straight from GitHub
+# Install straight from GitHub
 dsh plugin --profile web add github:bujue600-arch/dsh-testgen
 ```
 
-`dsh plugin add` installs the package into the profile and reconciles the bundle layer stack — the plugin declares a `dsh.bundle` manifest (`"dsh": { "bundle": { "patch": "./cordis.patch.yml" } }`), so no hand-editing is required. It works for any profile: `web`, `headless`, or your own.
+`dsh plugin add` installs the package into the profile and reconciles the bundle layer stack — the plugin declares a `dsh.bundle` manifest (`"dsh": { "bundle": { "patch": "./cordis.patch.yml" } }`), so no hand-editing is required. It works for any profile: `web`, `headless`, or your own. (An npm package will be published with the first stable dsh release it targets; pinning to a release tag is recommended once available.)
 
 > Note for git/file installs: pnpm exits non-zero on missing peers for linked dependencies; that is expected — the harness resolves the peer packages (`@deepseek-ai/dsh-*`, cordis) from the profile's own module fallback at boot. The plugin loads normally.
 

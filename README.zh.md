@@ -2,7 +2,7 @@
 
 > 面向 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的自动化单元测试生成插件：`/testgen` 命令 + `generate_tests` 工具，自动生成测试、运行项目测试框架，并**持续修复失败直到通过**——有界、可观测、对改动诚实。
 
-[![npm](https://img.shields.io/npm/v/dsh-testgen?color=4D6BFE)](https://www.npmjs.com/package/dsh-testgen)
+[![release](https://img.shields.io/github/v/release/bujue600-arch/dsh-testgen?color=4D6BFE)](https://github.com/bujue600-arch/dsh-testgen/releases)
 [![license](https://img.shields.io/github/license/bujue600-arch/dsh-testgen)](./LICENSE)
 [![CI](https://github.com/bujue600-arch/dsh-testgen/actions/workflows/ci.yml/badge.svg)](https://github.com/bujue600-arch/dsh-testgen/actions/workflows/ci.yml)
 [![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
@@ -52,14 +52,11 @@ DeepSeek Harness 的 Agent 不断写代码——却常常不写测试。`dsh-tes
 需要 Node ≥ 22 与 `dsh`（DeepSeek Harness CLI）。
 
 ```sh
-# 从 npm（推荐）
-dsh plugin --profile web add dsh-testgen
-
-# 或直接从 GitHub 安装
+# 直接从 GitHub 安装
 dsh plugin --profile web add github:bujue600-arch/dsh-testgen
 ```
 
-`dsh plugin add` 会把包安装进 profile 并自动对账 bundle 层叠——插件声明了 `dsh.bundle` 清单（`"dsh": { "bundle": { "patch": "./cordis.patch.yml" } }`），无需手工编辑。任何 profile 都适用：`web`、`headless` 或自定义。
+`dsh plugin add` 会把包安装进 profile 并自动对账 bundle 层叠——插件声明了 `dsh.bundle` 清单（`"dsh": { "bundle": { "patch": "./cordis.patch.yml" } }`），无需手工编辑。任何 profile 都适用：`web`、`headless` 或自定义。（npm 包将随目标 dsh 稳定版发布；届时建议固定到 release 标签。）
 
 > git/file 安装说明：pnpm 对链接依赖会以非零退出码提示缺失 peers——这是预期行为：启动时 harness 会从 profile 自身的模块回退中解析这些 peer 包（`@deepseek-ai/dsh-*`、cordis）。插件照常加载。
 
